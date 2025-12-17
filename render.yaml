@@ -26,7 +26,7 @@ services:
     name: watizat-frontend
     runtime: node
     env: node
-    buildCommand: cd frontend && yarn install --frozen-lockfile --network-timeout 300000 && GENERATE_SOURCEMAP=false CI=false yarn build
+    buildCommand: cd frontend && npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./frontend/build
     envVars:
       - key: REACT_APP_BACKEND_URL
