@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
+import PixCard from '../components/PixCard';
 
 const Assinatura = () => {
   const navigate = useNavigate();
@@ -191,17 +192,7 @@ const Assinatura = () => {
               </TabsList>
 
               <TabsContent value="pix" className="space-y-3">
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <div className="w-48 h-48 bg-white mx-auto mb-3 rounded-lg flex items-center justify-center border-2">
-                    <span className="text-xs text-gray-500">QR Code PIX</span>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">Escaneie o código ou copie a chave</p>
-                  <Input
-                    value="00020126580014BR.GOV.BCB.PIX..."
-                    readOnly
-                    className="text-xs"
-                  />
-                </div>
+                <PixCard amount={6.75} compact />
               </TabsContent>
 
               <TabsContent value="card" className="space-y-3">

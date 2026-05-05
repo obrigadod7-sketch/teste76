@@ -8,6 +8,7 @@ import { Slider } from '../components/ui/slider';
 import { Checkbox } from '../components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import PixCard from '../components/PixCard';
 import { ArrowLeft, MapPin, CreditCard, Smartphone, Check, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -327,36 +328,10 @@ const Abonamento = () => {
               </TabsList>
 
               <TabsContent value="pix" className="space-y-3">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="w-48 h-48 bg-white mx-auto mb-3 rounded-lg flex items-center justify-center border-2">
-                    <div className="text-center">
-                      <div className="w-40 h-40 bg-gray-200 mx-auto mb-2 flex items-center justify-center">
-                        <span className="text-xs text-gray-500">QR Code PIX</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-600 text-center mb-2">
-                    Escaneie o código ou copie a chave abaixo
-                  </p>
-                  <div className="flex space-x-2">
-                    <Input
-                      value={pixKey}
-                      readOnly
-                      className="text-xs flex-1"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={copyPixKey}
-                      className="px-3"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-green-600 mt-2 text-center">
-                    ✓ Pagamento seguro processado automaticamente
-                  </p>
-                </div>
+                <PixCard compact />
+                <p className="text-xs text-green-600 mt-2 text-center">
+                  ✓ Pagamento seguro processado automaticamente
+                </p>
               </TabsContent>
 
               <TabsContent value="card" className="space-y-3">

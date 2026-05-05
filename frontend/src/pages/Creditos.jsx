@@ -8,6 +8,7 @@ import { pricingPlans, getCurrentUser } from '../mock/data';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
+import PixCard from '../components/PixCard';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
@@ -129,17 +130,7 @@ const Creditos = () => {
                         </TabsList>
                         
                         <TabsContent value="pix" className="space-y-3">
-                          <div className="bg-gray-50 p-4 rounded-lg text-center">
-                            <div className="w-48 h-48 bg-white mx-auto mb-3 rounded-lg flex items-center justify-center border-2 border-dashed">
-                              <span className="text-gray-400 text-sm">QR Code PIX</span>
-                            </div>
-                            <p className="text-xs text-gray-600 mb-2">Escaneie o código ou copie a chave</p>
-                            <Input
-                              value="00020126580014BR.GOV.BCB.PIX..."
-                              readOnly
-                              className="text-xs"
-                            />
-                          </div>
+                          <PixCard amount={selectedPlan.price} compact />
                         </TabsContent>
                         
                         <TabsContent value="card" className="space-y-3">

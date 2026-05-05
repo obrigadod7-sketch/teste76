@@ -160,12 +160,12 @@ const NewHome = () => {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-green-400 rounded-lg flex items-center justify-center text-white font-bold">
-              S
+              H
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold">
-                <span className="text-pink-500">servi</span>
-                <span className="text-green-500">vizinhos</span>
+                <span className="text-pink-500">homedaily</span>
+                <span className="text-green-500"> serviços jataí</span>
               </span>
               <span className="text-xs text-gray-500 uppercase">Facilitador de Projetos</span>
             </div>
@@ -208,7 +208,7 @@ const NewHome = () => {
             <h1 className="text-4xl sm:text-5xl font-bold mb-6">
               Prestação de serviços
               <br />
-              <span className="text-green-600">entre vizinhos</span>
+              <span className="text-green-600">homedaily jataí</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
               Milhares de pessoas e profissionais perto de você prontos para ajudar
@@ -266,7 +266,7 @@ const NewHome = () => {
       <div className="bg-green-500 py-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
           <p className="text-white text-lg font-medium mb-4 md:mb-0">
-            Conecte-se para aproveitar ao máximo o ServiVizinhos
+            Conecte-se para aproveitar ao máximo o homedaily serviços jataí
           </p>
           <div className="flex items-center space-x-4">
             <Button onClick={() => { setShowCreateAccount(true); resetRegister(); }} className="bg-white text-green-600 hover:bg-gray-100 px-8">

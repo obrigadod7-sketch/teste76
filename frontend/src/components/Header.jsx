@@ -30,10 +30,13 @@ const Header = () => {
           {/* Logo */}
           <Link to="/feed" className="flex items-center space-x-2">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                S
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                H
               </div>
-              <span className="ml-2 text-lg font-bold text-gray-800">servivizinhos</span>
+              <span className="ml-2 text-lg font-bold">
+                <span className="text-pink-500">homedaily</span>
+                <span className="text-green-500"> serviços jataí</span>
+              </span>
             </div>
           </Link>
 
@@ -111,44 +114,10 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-        <div className="flex items-center justify-around h-14">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            
-            if (item.path === '/publicar') {
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="flex flex-col items-center -mt-6"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                </Link>
-              );
-            }
-            
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex flex-col items-center text-xs py-2 ${
-                  isActive ? 'text-green-600' : 'text-gray-600'
-                }`}
-              >
-                <Icon className="w-5 h-5 mb-0.5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      {/* Mobile Navigation handled by BottomNav component */}
     </header>
   );
 };
 
 export default Header;
+
