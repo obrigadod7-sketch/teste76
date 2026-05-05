@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, MessageCircle, MapPin, User, LogOut, Settings, CreditCard } from 'lucide-react';
+import { Home, Briefcase, MessageCircle, MapPin, User, LogOut, Settings, CreditCard, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useAuth } from '../context/AuthContext';
@@ -57,15 +57,27 @@ const Header = () => {
             })}
           </nav>
 
-          {/* User Profile with Dropdown */}
-          <div className="flex items-center space-x-3">
+          {/* User Profile - avatar redirects to /perfil; chevron opens menu */}
+          <div className="flex items-center space-x-1">
+            <Link
+              to="/perfil"
+              data-testid="user-avatar-link"
+              aria-label="Ir para meu perfil"
+              className="flex items-center hover:opacity-80 transition-opacity rounded-full"
+            >
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={user?.avatar} alt={user?.name || ''} />
+                <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+              </Avatar>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button data-testid="user-menu-trigger" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={user?.avatar} alt={user?.name || ''} />
-                    <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
-                  </Avatar>
+                <button
+                  data-testid="user-menu-trigger"
+                  aria-label="Abrir menu do usuário"
+                  className="p-1 rounded-md text-gray-600 hover:text-green-600 hover:bg-gray-100 transition-colors"
+                >
+                  <ChevronDown className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
