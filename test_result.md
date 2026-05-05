@@ -101,3 +101,80 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Clonar/replicar exatamente o aplicativo ServiVizinhos (clone do AlloVoisins em PT-BR) a partir do ZIP enviado. Subir frontend (React) + backend (FastAPI/Mongo) com auth JWT, demands, users, messages, reviews e categories."
+
+backend:
+  - task: "Auth (register/login/me) JWT"
+    implemented: true
+    working: true
+    file: "backend/routers/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Copiado do ZIP; backend sobe sem erros, indexes criados."
+        - working: true
+          agent: "testing"
+          comment: "✅ ALL AUTH ENDPOINTS WORKING: POST /api/auth/register returns JWT token + user object correctly. POST /api/auth/login authenticates and returns JWT. GET /api/auth/me returns current user with valid token. Tested with realistic Brazilian user data (Maria Silva, João Santos). Password hashing with bcrypt working correctly."
+  - task: "Demands CRUD + like/respond"
+    implemented: true
+    working: true
+    file: "backend/routers/demands.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Copiado do ZIP."
+        - working: true
+          agent: "testing"
+          comment: "✅ ALL DEMAND ENDPOINTS WORKING: POST /api/demands/ creates demands with auth. GET /api/demands/ lists all demands. GET /api/demands/:id returns single demand. POST /api/demands/:id/like increments likes. POST /api/demands/:id/respond creates responses. All CRUD operations verified. Minor: FastAPI redirects non-trailing-slash URLs (307) but functionality works correctly."
+  - task: "Users / Messages / Reviews / Categories"
+    implemented: true
+    working: true
+    file: "backend/routers/*.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Copiado do ZIP."
+        - working: true
+          agent: "testing"
+          comment: "✅ ALL ENDPOINTS WORKING: GET /api/users/ lists users. GET /api/categories/ returns 12 categories. POST /api/messages/ sends messages with auth. GET /api/messages/ retrieves conversations. POST /api/reviews/ creates reviews and updates user ratings. GET /api/reviews/user/:userId returns user reviews. All tested end-to-end with realistic data."
+
+frontend:
+  - task: "Landing + Multi-language + Páginas (Home, Demande, Mensagens, Perfil, Empregos, Mapa, Admin)"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/*"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Landing carregou com layout ServiVizinhos verde/preto, hero, badges, CTA. Não precisa teste auto agora."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "Projeto AlloVoisins/ServiVizinhos clonado do ZIP. Frontend e backend rodando. Por favor testar todos os endpoints /api/auth, /api/demands, /api/users, /api/messages, /api/reviews, /api/categories - register, login, me, criar/listar/like/respond demand, listar categorias."
+    - agent: "testing"
+      message: "✅ BACKEND TESTING COMPLETE - 100% SUCCESS RATE (15/15 tests passed). All endpoints working correctly at https://app-duplication-5.preview.emergentagent.com/api. Tested: health check, categories, auth (register/login/me), users list, demands CRUD, like/respond, messages, reviews. Minor note: FastAPI redirects URLs without trailing slashes (307) but all functionality works correctly. Backend is production-ready."
