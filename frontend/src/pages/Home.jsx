@@ -57,7 +57,7 @@ const themes = [
   { id: 't3', title: 'É primavera!', image: 'https://images.unsplash.com/photo-1606676539940-12768ce0e762?w=400&h=300&fit=crop', likes: '1.1k', shares: '277' }
 ];
 
-const PostCard = ({ post, onRecommend, onRespond }) => {
+const PostCard = ({ post, onRecommend, onRespond, onProfile }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [recommended, setRecommended] = useState(false);
@@ -85,12 +85,27 @@ const PostCard = ({ post, onRecommend, onRespond }) => {
       </div>
 
       <div className="flex items-start space-x-3 mb-3">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={post.userAvatar} alt={post.userName} />
-          <AvatarFallback>{post.userName.charAt(0)}</AvatarFallback>
-        </Avatar>
+        <button
+          type="button"
+          onClick={() => onProfile && onProfile(post)}
+          aria-label={`Ver perfil de ${post.userName}`}
+          data-testid={`post-avatar-${post.id}`}
+          className="flex-shrink-0 rounded-full hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-300"
+        >
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post.userAvatar} alt={post.userName} />
+            <AvatarFallback>{post.userName.charAt(0)}</AvatarFallback>
+          </Avatar>
+        </button>
         <div className="flex-1">
-          <h3 className="font-semibold text-sm">{post.userName}</h3>
+          <button
+            type="button"
+            onClick={() => onProfile && onProfile(post)}
+            className="font-semibold text-sm text-left hover:text-green-600 transition-colors"
+            data-testid={`post-username-${post.id}`}
+          >
+            {post.userName}
+          </button>
           <p className="text-sm text-gray-700 mt-1">{post.description}</p>
 
           {/* Display post images - full width like allovoisins */}
@@ -346,7 +361,7 @@ const Home = () => {
           <div className="lg:col-span-2">
             <div className="space-y-0">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} onRecommend={handleRecommend} onRespond={handleRespond} />
+                <PostCard key={post.id} post={post} onRecommend={handleRecommend} onRespond={handleRespond} onProfile={(p) => navigate('/perfil', { state: { fromPost: p } })} />
               ))}
             </div>
 
