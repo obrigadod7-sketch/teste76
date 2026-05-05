@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Heart, Share2, MessageSquare, MapPin, X, Camera, Globe, ChevronRight, Users, Send, Image as ImageIcon, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LocationMap from '../components/LocationMap';
 
 const initialPosts = [
   {
@@ -473,6 +474,10 @@ const Home = () => {
                   className="h-8 text-xs border-gray-200"
                   data-testid="post-address-input"
                 />
+              </div>
+
+              <div className="mt-3">
+                <LocationMap compact onAddress={(addr) => setPostAddress(addr)} />
               </div>
 
               <Button

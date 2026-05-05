@@ -32,7 +32,7 @@ const PixCard = ({ amount, compact = false }) => {
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3" data-testid="pix-card">
       <div className="flex flex-col items-center">
-        <div className={`bg-white p-3 rounded-lg border border-gray-200 ${compact ? 'w-72 h-72' : 'w-80 h-80'} max-w-full`}>
+        <div className={`bg-white p-3 rounded-lg border-2 border-gray-300 ${compact ? 'w-80 h-80' : 'w-96 h-96'} max-w-full`}>
           <img
             src={PIX_INFO.qrImage}
             alt="QR Code Pix"
