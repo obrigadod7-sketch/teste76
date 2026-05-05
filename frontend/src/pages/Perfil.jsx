@@ -1,15 +1,35 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { Card } from '../components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Button } from '../components/ui/button';
-import { Star, MapPin, Calendar, Users, Shield, ShieldCheck, ShieldX, Flag, Camera, Video, Phone, Edit, Check, X } from 'lucide-react';
+import { Star, MapPin, Calendar, Users, Shield, ShieldCheck, ShieldX, Flag, Camera, Video, Edit, Check, X, MessageSquare } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
-import { Input } from '../components/ui/input';
 import { useAuth } from '../context/AuthContext';
 
 const Perfil = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const location = useLocation();
+  const fromPost = location.state?.fromPost || null;
+
+  // Build the "viewed" user — either own user or a post author
+  const viewedUser = useMemo(() => {
+    if (fromPost) {
+      return {
+        id: fromPost.id,
+        name: fromPost.userName,
+        avatar: fromPost.userAvatar,
+        location: (fromPost.location || '').split(' - ')[0] || fromPost.location || '',
+        createdAt: null,
+        isOther: true,
+      };
+    }
+    return { ...(user || {}), isOther: false };
+  }, [fromPost, user]);
+
+  const isOwn = !viewedUser.isOther;
+
   const [activeTab, setActiveTab] = useState('apresentacao');
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
@@ -20,8 +40,21 @@ const Perfil = () => {
   const photoInputRef = useRef(null);
   const cameraInputRef = useRef(null);
   const videoInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      updateUser({ avatar: dataUrl });
+      showToast('Foto de perfil atualizada!');
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handlePhotoUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -87,12 +120,30 @@ const Perfil = () => {
           <div className="absolute -bottom-16 left-8">
             <div className="relative">
               <Avatar className="w-32 h-32 border-4 border-white shadow-lg" data-testid="profile-avatar">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="text-4xl bg-gray-300 text-gray-600">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarImage src={viewedUser?.avatar} alt={viewedUser?.name} />
+                <AvatarFallback className="text-4xl bg-gray-300 text-gray-600">{viewedUser?.name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
-              <button className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50" data-testid="change-avatar-btn">
-                <Camera className="w-4 h-4 text-gray-500" />
-              </button>
+              {isOwn && (
+                <>
+                  <button
+                    onClick={() => avatarInputRef.current?.click()}
+                    className="absolute bottom-1 right-1 w-9 h-9 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50 border border-gray-200"
+                    data-testid="change-avatar-btn"
+                    aria-label="Alterar foto de perfil"
+                    title="Alterar foto de perfil"
+                  >
+                    <Camera className="w-4 h-4 text-gray-700" />
+                  </button>
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarChange}
+                    data-testid="avatar-file-input"
+                  />
+                </>
+              )}
             </div>
           </div>
           <div className="absolute -bottom-12 left-44">
@@ -104,15 +155,21 @@ const Perfil = () => {
         <div className="bg-white px-8 pt-20 pb-4">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900" data-testid="profile-name">{user?.name || 'Usuário'}</h1>
+              <h1 className="text-2xl font-bold text-gray-900" data-testid="profile-name">{viewedUser?.name || 'Usuário'}</h1>
               <div className="flex items-center gap-1 text-gray-500 mt-1">
                 <MapPin className="w-4 h-4" />
-                <span className="text-sm">{user?.location || 'Brasil'}</span>
+                <span className="text-sm">{viewedUser?.location || 'Brasil'}</span>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={() => { setEditPresentation(presentation); setShowEditModal(true); }} data-testid="edit-profile-btn">
-              <Edit className="w-4 h-4 mr-1" /> Editar perfil
-            </Button>
+            {isOwn ? (
+              <Button variant="outline" size="sm" onClick={() => { setEditPresentation(presentation); setShowEditModal(true); }} data-testid="edit-profile-btn">
+                <Edit className="w-4 h-4 mr-1" /> Editar perfil
+              </Button>
+            ) : (
+              <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white" data-testid="contact-user-btn">
+                <MessageSquare className="w-4 h-4 mr-1" /> Contatar
+              </Button>
+            )}
           </div>
 
           {/* Tabs */}
@@ -151,7 +208,7 @@ const Perfil = () => {
                   <div>
                     <div className="flex items-center justify-center gap-2 text-gray-700">
                       <Calendar className="w-4 h-4" />
-                      <span className="font-semibold text-sm">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) : '2025'}</span>
+                      <span className="font-semibold text-sm">{viewedUser?.createdAt ? new Date(viewedUser.createdAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) : '2025'}</span>
                     </div>
                     <p className="text-xs text-gray-500">data de inscrição</p>
                   </div>

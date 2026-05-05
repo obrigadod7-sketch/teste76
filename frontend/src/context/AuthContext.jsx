@@ -53,8 +53,16 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (patch) => {
+    setUser(prev => {
+      const next = { ...(prev || {}), ...patch };
+      try { localStorage.setItem('user', JSON.stringify(next)); } catch (e) { /* ignore */ }
+      return next;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
