@@ -560,15 +560,15 @@ const Mensagens = () => {
             <div className="flex justify-center">
               <div className="bg-white p-3 rounded-lg border-4 border-green-500">
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020126580014br.gov.bcb.pix0136jonhsondecarvalho@gmail.com520400005303986540551965.655802BR5925JONHSON%20DE%20SOUSA%20CARV6009SAO%20PAULO62290525ERI51965652CARVALHO63041F20"
-                  alt="QR Code PIX" className="w-52 h-52" />
+                  src="/assets/qr-pix.png"
+                  alt="QR Code PIX" className="w-72 h-72 object-contain" />
               </div>
             </div>
 
             <div className="space-y-2 text-sm">
               <div>
-                <p className="text-gray-600 text-xs font-semibold">Beneficiário:</p>
-                <p className="font-bold">JONHSON DE SOUSA CARVALHO</p>
+                <p className="text-gray-600 text-xs font-semibold">CNPJ:</p>
+                <p className="font-bold">51.965.652</p>
               </div>
               <div>
                 <p className="text-gray-600 text-xs font-semibold">Chave PIX:</p>

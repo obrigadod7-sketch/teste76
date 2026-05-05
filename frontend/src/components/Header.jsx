@@ -5,10 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import BottomNav from './BottomNav';
+import { isAdminEmail } from '../lib/admin';
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
 
   const handleLogout = () => {
     logout();
@@ -71,10 +73,12 @@ const Header = () => {
                   <CreditCard className="w-4 h-4 mr-2" />
                   Comprar Créditos
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin')}>
-                  <Settings className="w-4 h-4 mr-2" />
-                  Dashboard Admin
-                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')} data-testid="admin-dashboard-link">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Dashboard Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="w-4 h-4 mr-2" />

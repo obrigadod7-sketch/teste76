@@ -21,12 +21,21 @@ import Orcamentos from './pages/admin/Orcamentos';
 import Clientes from './pages/admin/Clientes';
 import Parametros from './pages/admin/Parametros';
 import { Toaster } from './components/ui/toaster';
+import { isAdminEmail } from './lib/admin';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
   return isAuthenticated ? children : <Navigate to="/" replace />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+  if (loading) return null;
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAdminEmail(user?.email)) return <Navigate to="/feed" replace />;
+  return children;
 };
 
 const ConditionalBottomNav = () => {
@@ -62,8 +71,8 @@ function AppRoutes() {
       <Route path="/editar-perfil" element={<ProtectedRoute><EditarPerfil /></ProtectedRoute>} />
       <Route path="/ofertantes" element={<ProtectedRoute><Ofertantes /></ProtectedRoute>} />
       
-      {/* Admin Routes */}
-      <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+      {/* Admin Routes - restricted to whitelisted admin emails */}
+      <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
         <Route index element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="orcamentos" element={<Orcamentos />} />
