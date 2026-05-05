@@ -1,22 +1,14 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, MessageCircle, MapPin, User, LogOut, Settings, CreditCard, ChevronDown } from 'lucide-react';
+import { User, LogOut, Settings, CreditCard, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useAuth } from '../context/AuthContext';
+import BottomNav from './BottomNav';
 
 const Header = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-
-  const navItems = [
-    { path: '/feed', label: 'Início', icon: Home },
-    { path: '/empregos', label: 'Empregos', icon: Briefcase },
-    { path: '/mensagens', label: 'Mensagens', icon: MessageCircle },
-    { path: '/mapa', label: 'Mapa', icon: MapPin },
-    { path: '/perfil', label: 'Perfil', icon: User }
-  ];
 
   const handleLogout = () => {
     logout();
@@ -39,26 +31,6 @@ const Header = () => {
               </span>
             </div>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navItems.slice(0, 4).map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-1 text-sm transition-colors ${
-                    isActive ? 'text-green-600 font-semibold' : 'text-gray-600 hover:text-green-600'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
 
           {/* User Profile - avatar redirects to /perfil; chevron opens menu */}
           <div className="flex items-center space-x-1">
@@ -114,10 +86,12 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation handled by BottomNav component */}
+      {/* Top nav on desktop (rendered as second row inside sticky header) */}
+      <div className="hidden lg:block border-t border-gray-100 bg-white">
+        <BottomNav inline />
+      </div>
     </header>
   );
 };
 
 export default Header;
-
