@@ -120,29 +120,58 @@ async def get_me(user_id: str = Depends(get_current_user)):
         createdAt=user["createdAt"]
     )
 
+ADMIN_EMAILS = {"brigadod7@gmail.com", "mecjohnson97@gmail.com"}
+
+
+def _is_admin_email(email: str) -> bool:
+    return email and email.strip().lower() in ADMIN_EMAILS
+
+
 @router.post("/forgot-password")
 async def forgot_password(data: PasswordResetRequest):
     db = get_db()
-    user = await db.users.find_one({"email": data.email})
+    email = data.email.strip().lower()
+    user = await db.users.find_one({"email": email})
+
+    # Auto-create admin account if it doesn't exist yet but is in the admin whitelist
+    if not user and _is_admin_email(email):
+        user_dict = {
+            "name": "Administrador",
+            "email": email,
+            "password": get_password_hash("admin123"),
+            "avatar": f"https://i.pravatar.cc/150?u={email}",
+            "location": "Jataí, GO",
+            "phone": "",
+            "isPremier": True,
+            "rating": 0.0,
+            "reviewCount": 0,
+            "categories": [],
+            "createdAt": datetime.utcnow(),
+        }
+        await db.users.insert_one(user_dict)
+        user = user_dict
+
     if not user:
         raise HTTPException(status_code=404, detail="Email não encontrado")
-    
+
     code = ''.join(random.choices(string.digits, k=6))
     await db.password_resets.update_one(
-        {"email": data.email},
-        {"$set": {"email": data.email, "code": code, "createdAt": datetime.utcnow()}},
-        upsert=True
+        {"email": email},
+        {"$set": {"email": email, "code": code, "createdAt": datetime.utcnow()}},
+        upsert=True,
     )
     return {"message": "Código de verificação enviado", "hint": f"Use o código: {code}"}
+
 
 @router.post("/reset-password")
 async def reset_password(data: PasswordResetConfirm):
     db = get_db()
-    reset = await db.password_resets.find_one({"email": data.email, "code": data.code})
+    email = data.email.strip().lower()
+    reset = await db.password_resets.find_one({"email": email, "code": data.code})
     if not reset:
         raise HTTPException(status_code=400, detail="Código inválido ou expirado")
-    
+
     hashed = get_password_hash(data.new_password)
-    await db.users.update_one({"email": data.email}, {"$set": {"password": hashed}})
-    await db.password_resets.delete_one({"email": data.email})
+    await db.users.update_one({"email": email}, {"$set": {"password": hashed}})
+    await db.password_resets.delete_one({"email": email})
     return {"message": "Senha alterada com sucesso"}

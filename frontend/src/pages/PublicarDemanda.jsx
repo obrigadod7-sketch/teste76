@@ -23,15 +23,53 @@ const PublicarDemanda = () => {
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
-  const handlePhotoUpload = (e) => {
+  // Compress image so it persists in localStorage (max 1280px, JPEG 0.8)
+  const compressImage = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1280;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = Math.min(maxDim / width, maxDim / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = () => resolve(e.target.result);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+
+  const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length + photos.length > 3) return;
-    files.forEach(f => setPhotos(prev => [...prev, { url: URL.createObjectURL(f), id: Math.random().toString(36) }]));
+    for (const f of files) {
+      const dataUrl = await compressImage(f);
+      if (dataUrl) setPhotos(prev => [...prev, { url: dataUrl, id: Math.random().toString(36) }]);
+    }
   };
 
-  const handleVideoUpload = (e) => {
+  const handleVideoUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) setVideos(prev => [...prev, { url: URL.createObjectURL(file), id: Math.random().toString(36) }]);
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { showToast('Vídeo muito grande (máx 8 MB).'); return; }
+    const dataUrl = await readFileAsDataUrl(file);
+    if (dataUrl) setVideos(prev => [...prev, { url: dataUrl, id: Math.random().toString(36) }]);
   };
 
   const handleSubmit = () => {

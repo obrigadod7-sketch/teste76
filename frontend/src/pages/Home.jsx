@@ -234,13 +234,50 @@ const Home = () => {
     };
   }, []);
 
-  const handlePhotoUpload = (e, index) => {
+  // Helper: read a File as base64 data URL so it persists in localStorage
+  const fileToDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(ev.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  // Compress image to reduce localStorage size (max 1280px, JPEG quality 0.8)
+  const compressImage = (file) =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1280;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            const scale = Math.min(maxDim / width, maxDim / height);
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.onerror = () => resolve(e.target.result);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+
+  const handlePhotoUpload = async (e, index) => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
+    const dataUrl = await compressImage(file);
+    if (!dataUrl) return;
     setPostPhotos(prev => {
       const updated = [...prev];
-      updated[index] = url;
+      updated[index] = dataUrl;
       return updated;
     });
   };
@@ -253,16 +290,26 @@ const Home = () => {
     });
   };
 
-  const handleCameraCapture = (e) => {
+  const handleCameraCapture = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setPostPhotos(prev => [...prev, URL.createObjectURL(file)]);
+    const dataUrl = await compressImage(file);
+    if (!dataUrl) return;
+    setPostPhotos(prev => [...prev, dataUrl]);
   };
 
-  const handleVideoUpload = (e) => {
+  const handleVideoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setPostVideos(prev => [...prev, URL.createObjectURL(file)]);
+    // Videos: keep as base64 but warn if too large (>8MB)
+    if (file.size > 8 * 1024 * 1024) {
+      setRecommendedToast('Vídeo muito grande (máx 8 MB). Tente um vídeo menor.');
+      setTimeout(() => setRecommendedToast(''), 3500);
+      return;
+    }
+    const dataUrl = await fileToDataUrl(file);
+    if (!dataUrl) return;
+    setPostVideos(prev => [...prev, dataUrl]);
   };
 
   const removeVideo = (index) => {

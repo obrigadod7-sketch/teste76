@@ -68,6 +68,32 @@ async def startup_event():
     await db.reviews.create_index("toUserId")
     logger.info("Database indexes created")
 
+    # Seed administrator accounts (default password: admin123). Admins can reset
+    # their password at any time via "Esqueci minha senha".
+    try:
+        from auth_utils import get_password_hash
+        from datetime import datetime as _dt
+        ADMIN_EMAILS = ["brigadod7@gmail.com", "mecjohnson97@gmail.com"]
+        for email in ADMIN_EMAILS:
+            existing = await db.users.find_one({"email": email})
+            if not existing:
+                await db.users.insert_one({
+                    "name": "Administrador",
+                    "email": email,
+                    "password": get_password_hash("admin123"),
+                    "avatar": f"https://i.pravatar.cc/150?u={email}",
+                    "location": "Jataí, GO",
+                    "phone": "",
+                    "isPremier": True,
+                    "rating": 0.0,
+                    "reviewCount": 0,
+                    "categories": [],
+                    "createdAt": _dt.utcnow(),
+                })
+                logger.info(f"Seeded admin account: {email}")
+    except Exception as e:
+        logger.warning(f"Could not seed admin accounts: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
